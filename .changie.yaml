@@ -1,0 +1,38 @@
+# Changie docs
+# https://changie.dev/config
+#
+# Advanced formatting/logic docs
+# https://masterminds.github.io/sprig
+changesDir: changelog/releases
+unreleasedDir: ../unreleased
+headerPath: ../header.tpl.md
+versionHeaderPath: ""
+versionFooterPath: ""
+changelogPath: CHANGELOG.md
+versionExt: md
+versionFormat: |
+  ## [{{.Version}}] _{{.Time.Format "2006-01-02"}}_
+kindFormat: "- **{{.Kind}}**"
+changeFormat: "  - {{.Body}} ([FE#{{.Custom.PR}}])"
+headerFormat: |
+  BE PRs needing a synced release: {{- range without (customs .Changes "BE PR" | uniq) "" }} [BE#{{.}}] {{- end}}
+footerFormat: |
+  {{- range (customs .Changes "PR" | uniq) }}
+  [FE#{{.}}]: https://github.com/cycloidio/youdeploy-frontend-web/pull/{{.}}
+  {{- end}}
+  {{- range without (customs .Changes "BE PR" | uniq) "" }}
+  [BE#{{.}}]: https://github.com/cycloidio/youdeploy-http-api/issue/{{.}}
+  {{- end}}
+kinds:
+- label: ADDED
+- label: CHANGED
+- label: FIXED
+- label: INTERNAL
+- label: REMOVED
+custom:
+- key: PR
+  type: int
+  minInt: 1
+- key: BE PR
+  label: If this needs to be synced with the BE when releasing, please provide the BE PR number
+  type: string
